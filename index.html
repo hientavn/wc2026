@@ -316,6 +316,10 @@ function renderGroups(){
 let curFilter = "all";
 function renderMatches(){
   const list = MATCHES.filter(m => curFilter==="all"?true:curFilter==="done"?m.done:!m.done);
+  // map điểm hiện tại của từng đội (để hiện ở trận chưa đá)
+  const S = computeStandings();
+  const PTS = {};
+  for(const g in S) S[g].forEach(r => PTS[r.c] = r.pts);
   let html = `<div class="filters">
     ${["all","done","upcoming"].map(f=>`<button class="fbtn ${curFilter===f?"active":""}" data-f="${f}">${f==="all"?"Tất cả":f==="done"?"Đã đấu":"Sắp diễn ra"}</button>`).join("")}
   </div><div class="mlist">`;
@@ -325,8 +329,10 @@ function renderMatches(){
     const resOnly = m.done && !hasScore && m.res;
     const hw = hasScore ? m.hs>m.as : resOnly && m.res==="W";
     const aw = hasScore ? m.as>m.hs : resOnly && m.res==="L";
+    const ptsTag = c => !m.done
+      ? `<span style="display:block;font-size:9px;color:var(--mute);font-weight:600;margin-top:1px;">${PTS[c]??0} điểm</span>` : "";
     html += `<div class="match"><div class="mgrid">
-      <div class="mhome"><span class="team">${flag(m.h)}<span class="nm ${hw?"win":""}">${NAMES[m.h]}</span></span></div>
+      <div class="mhome"><span class="team" style="flex-direction:column;align-items:flex-end;gap:1px;"><span style="display:flex;align-items:center;gap:8px;">${flag(m.h)}<span class="nm ${hw?"win":""}">${NAMES[m.h]}</span></span>${ptsTag(m.h)}</span></div>
       <div>`;
     if(hasScore){
       html += `<div class="mscore" style="color:${m.hs===m.as?"var(--txt)":"var(--gold)"};">${m.hs} – ${m.as}</div>`;
@@ -338,7 +344,7 @@ function renderMatches(){
       html += `<div class="mtime">${m.t.split(" ")[1]}</div>`;
     }
     html += `<div class="mg center">Bảng ${m.g} · ${m.t.split(" ")[0]}</div></div>
-      <div class="maway"><span class="team">${flag(m.a)}<span class="nm ${aw?"win":""}">${NAMES[m.a]}</span></span></div>
+      <div class="maway"><span class="team" style="flex-direction:column;align-items:flex-start;gap:1px;"><span style="display:flex;align-items:center;gap:8px;">${flag(m.a)}<span class="nm ${aw?"win":""}">${NAMES[m.a]}</span></span>${ptsTag(m.a)}</span></div>
     </div>`;
     if(!m.done && m.wp){
       html += `<div class="wpbar">
