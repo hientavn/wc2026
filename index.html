@@ -116,10 +116,13 @@
 </div>
 
 <div class="content">
+  <div id="status" style="font-size:12px;font-weight:600;color:var(--mute);margin-bottom:14px;"></div>
   <div id="groups"></div>
   <div id="matches" class="hidden"></div>
   <div id="bracket" class="hidden"></div>
 </div>
+
+<button id="resetbtn" onclick="resetData()" style="display:none;position:fixed;right:18px;bottom:18px;z-index:50;padding:12px 18px;border-radius:30px;border:1px solid var(--line);cursor:pointer;background:var(--panel2);color:var(--mute);font-weight:700;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.4);">↺ Xóa dữ liệu đã nhập</button>
 
 <script>
 // ════════════════════════════════════════════════════════════
@@ -178,29 +181,29 @@ let MATCHES = [
   {g:"G",t:"15/06 22:00",h:"BEL",a:"EGY",hs:1,as:1,done:true},
   {g:"H",t:"16/06 01:00",h:"KSA",a:"URU",hs:1,as:1,done:true},
   {g:"G",t:"16/06 03:00",h:"IRN",a:"NZL",hs:2,as:2,done:true},
-  {g:"I",t:"16/06 22:00",h:"FRA",a:"SEN",res:"W",done:true},
-  {g:"I",t:"17/06 01:00",h:"IRQ",a:"NOR",res:"L",done:true},
-  {g:"J",t:"17/06 02:00",h:"ARG",a:"DZA",res:"W",done:true},
-  {g:"J",t:"17/06 03:00",h:"AUT",a:"JOR",res:"W",done:true},
-  {g:"K",t:"17/06 23:00",h:"POR",a:"COD",res:"D",done:true},
-  {g:"L",t:"17/06 22:00",h:"ENG",a:"CRO",res:"W",done:true},
-  {g:"L",t:"18/06 01:00",h:"GHA",a:"PAN",res:"W",done:true},
-  {g:"K",t:"18/06 03:00",h:"UZB",a:"COL",res:"L",done:true},
+  {g:"I",t:"16/06 22:00",h:"FRA",a:"SEN",hs:3,as:1,done:true},
+  {g:"I",t:"17/06 01:00",h:"IRQ",a:"NOR",hs:1,as:4,done:true},
+  {g:"J",t:"17/06 02:00",h:"ARG",a:"DZA",hs:3,as:0,done:true},
+  {g:"J",t:"17/06 03:00",h:"AUT",a:"JOR",hs:3,as:1,done:true},
+  {g:"K",t:"17/06 23:00",h:"POR",a:"COD",hs:1,as:1,done:true},
+  {g:"L",t:"17/06 22:00",h:"ENG",a:"CRO",hs:4,as:2,done:true},
+  {g:"L",t:"18/06 01:00",h:"GHA",a:"PAN",hs:1,as:0,done:true},
+  {g:"K",t:"18/06 03:00",h:"UZB",a:"COL",hs:1,as:3,done:true},
   // LƯỢT 2
-  {g:"A",t:"18/06 23:00",h:"CZE",a:"RSA",res:"D",done:true},
-  {g:"B",t:"18/06 22:00",h:"SUI",a:"BIH",res:"W",done:true},
-  {g:"B",t:"19/06 01:00",h:"CAN",a:"QAT",res:"W",done:true},
-  {g:"A",t:"19/06 03:00",h:"MEX",a:"KOR",res:"W",done:true},
-  {g:"D",t:"19/06 22:00",h:"USA",a:"AUS",res:"W",done:true},
-  {g:"C",t:"20/06 01:00",h:"SCO",a:"MAR",res:"L",done:true},
-  {g:"C",t:"20/06 04:00",h:"BRA",a:"HTI",res:"W",done:true},
-  {g:"D",t:"20/06 03:00",h:"TUR",a:"PAR",res:"L",done:true},
-  {g:"F",t:"20/06 23:00",h:"NED",a:"SWE",res:"W",done:true},
-  {g:"E",t:"21/06 03:00",h:"GER",a:"CIV",res:"W",done:true},
-  {g:"E",t:"21/06 06:00",h:"ECU",a:"CUW",res:"D",done:true},
-  {g:"F",t:"21/06 05:00",h:"TUN",a:"JPN",res:"L",done:true},
-  {g:"H",t:"21/06 23:00",h:"ESP",a:"KSA",res:"W",done:true},
-  {g:"G",t:"21/06 22:00",h:"BEL",a:"IRN",res:"D",done:true},
+  {g:"A",t:"18/06 23:00",h:"CZE",a:"RSA",hs:1,as:1,done:true},
+  {g:"B",t:"18/06 22:00",h:"SUI",a:"BIH",hs:4,as:1,done:true},
+  {g:"B",t:"19/06 01:00",h:"CAN",a:"QAT",hs:6,as:0,done:true},
+  {g:"A",t:"19/06 03:00",h:"MEX",a:"KOR",hs:1,as:0,done:true},
+  {g:"D",t:"19/06 22:00",h:"USA",a:"AUS",hs:2,as:0,done:true},
+  {g:"C",t:"20/06 01:00",h:"SCO",a:"MAR",hs:0,as:1,done:true},
+  {g:"C",t:"20/06 04:00",h:"BRA",a:"HTI",hs:3,as:0,done:true},
+  {g:"D",t:"20/06 03:00",h:"TUR",a:"PAR",hs:0,as:1,done:true},
+  {g:"F",t:"20/06 23:00",h:"NED",a:"SWE",hs:5,as:1,done:true},
+  {g:"E",t:"21/06 03:00",h:"GER",a:"CIV",hs:2,as:1,done:true},
+  {g:"E",t:"21/06 06:00",h:"ECU",a:"CUW",hs:0,as:0,done:true},
+  {g:"F",t:"21/06 05:00",h:"TUN",a:"JPN",hs:0,as:4,done:true},
+  {g:"H",t:"21/06 23:00",h:"ESP",a:"KSA",hs:4,as:0,done:true},
+  {g:"G",t:"21/06 22:00",h:"BEL",a:"IRN",hs:0,as:0,done:true},
   {g:"H",t:"22/06 05:00",h:"URU",a:"CPV",hs:2,as:2,done:true},
   {g:"G",t:"22/06 08:00",h:"NZL",a:"EGY",hs:1,as:3,done:true},
   {g:"J",t:"23/06 00:00",h:"ARG",a:"AUT",hs:2,as:0,done:true},
@@ -280,6 +283,7 @@ function computeStandings(){
 }
 
 function flag(c){ return `<span class="flag">${FLAGS[c]||"🏳️"}</span>`; }
+const LS_KEY = "wc2026_scores";
 
 // ── TAB 1: BẢNG ĐẤU ──
 function renderGroups(){
@@ -364,8 +368,39 @@ function renderMatches(){
     const as = parseInt(document.getElementById(`as-${i}`).value);
     if(isNaN(hs)||isNaN(as)){ b.textContent="⚠ Nhập đủ 2 tỷ số"; setTimeout(()=>b.textContent="Lưu tỷ số & cập nhật bảng",1500); return; }
     MATCHES[i].hs=hs; MATCHES[i].as=as; MATCHES[i].done=true; delete MATCHES[i].res;
+    saveLocal();
+    document.getElementById("resetbtn").style.display = "block";
     renderGroups(); renderMatches(); renderBracket();
   });
+}
+
+// ── Lưu / tải tỷ số trên máy (localStorage) ──
+// Chỉ lưu các tỷ số BẠN nhập, theo khóa bảng+đội. Refresh/đóng mở lại vẫn còn.
+function matchKey(m){ return m.g + "_" + m.h + "_" + m.a; }
+
+function saveLocal(){
+  const edits = {};
+  MATCHES.forEach(m => {
+    if(m.done && m.hs!=null && m.as!=null) edits[matchKey(m)] = [m.hs, m.as];
+  });
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(edits)); }catch(e){}
+}
+
+function loadLocal(){
+  let edits = {};
+  try{ edits = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); }catch(e){}
+  let count = 0;
+  MATCHES.forEach(m => {
+    const e = edits[matchKey(m)];
+    if(e){ m.hs = e[0]; m.as = e[1]; m.done = true; delete m.res; count++; }
+  });
+  return count;
+}
+
+function resetData(){
+  if(!confirm("Xóa toàn bộ tỷ số bạn đã nhập trên máy này?")) return;
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  location.reload();
 }
 
 // ── TAB 3: KNOCK-OUT ──
@@ -398,7 +433,22 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.getElementById(t.dataset.tab).classList.remove("hidden");
 });
 
+// ── Khởi tạo: nạp tỷ số đã lưu trên máy rồi dựng giao diện ──
+const restored = loadLocal();
+const banner = document.getElementById("status");
+if(banner){
+  if(restored > 0){
+    banner.textContent = "✓ Đã khôi phục " + restored + " tỷ số bạn nhập (lưu trên máy này)";
+    banner.style.color = "var(--green)";
+    document.getElementById("resetbtn").style.display = "block";
+  } else {
+    banner.textContent = "Tỷ số bạn nhập sẽ tự lưu trên máy này";
+    banner.style.color = "var(--mute)";
+  }
+  setTimeout(()=>{ banner.style.display = "none"; }, 3000);
+}
 renderGroups(); renderMatches(); renderBracket();
+
 </script>
 </body>
 </html>
