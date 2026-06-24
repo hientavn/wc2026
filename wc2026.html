@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 · Bảng đấu & Kết quả</title>
+<style>
+  :root{
+    --gold:#E8B84B; --gold-dim:#9A7B2E; --bg:#0B0E14; --panel:#141923;
+    --panel2:#1B212E; --line:#2A3344; --txt:#E6E9EF; --mute:#7A8499;
+    --green:#3DD68C; --red:#FF6B6B; --blue:#5B8DEF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--txt);
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif; padding-bottom:60px;
+  }
+  .hero{
+    background:radial-gradient(circle at 20% 0%, rgba(232,184,75,.18), transparent 50%), var(--panel);
+    border-bottom:1px solid var(--line); padding:32px 24px 0;
+  }
+  .wrap{max-width:1100px; margin:0 auto;}
+  .title{
+    font-size:34px; font-weight:900; margin:0; letter-spacing:-1px;
+    background:linear-gradient(90deg, var(--gold), #fff);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-row{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .sub{color:var(--mute); font-size:13px; margin:6px 0 24px;}
+  .tabs{display:flex; gap:4px; flex-wrap:wrap;}
+  .tab{
+    padding:12px 22px; border:none; cursor:pointer; font-size:14px; font-weight:700;
+    background:transparent; color:var(--mute); border-bottom:3px solid transparent;
+  }
+  .tab.active{color:var(--gold); border-bottom-color:var(--gold);}
+  .content{max-width:1100px; margin:0 auto; padding:28px 24px 0;}
+  .lead{color:var(--mute); font-size:13px; line-height:1.6; margin:0 0 18px;}
+  .lead b{color:var(--gold); font-weight:600;}
+
+  /* Groups */
+  .grid-groups{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
+  .gcard{background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .ghead{
+    display:flex; align-items:center; gap:10px; padding:12px 16px;
+    background:linear-gradient(90deg, var(--panel2), var(--panel)); border-bottom:1px solid var(--line);
+  }
+  .gbadge{width:30px; height:30px; border-radius:8px; background:var(--gold); color:var(--bg);
+    display:grid; place-items:center; font-weight:800; font-size:16px;}
+  .glabel{font-weight:700; letter-spacing:1px; color:var(--mute); font-size:12px;}
+  .grow{display:grid; grid-template-columns:22px 1fr 28px 28px 28px 38px 34px; gap:4px;
+    padding:8px; align-items:center; border-radius:8px;}
+  .ghdr{font-size:10px; color:var(--mute); font-weight:700; padding:4px 8px;}
+  .center{text-align:center;}
+  .team{display:flex; align-items:center; gap:8px; min-width:0;}
+  .team .nm{font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .flag{font-size:18px; line-height:1;}
+  .qual{background:rgba(232,184,75,.07); border-left:3px solid var(--gold);}
+  .qual .nm, .qual .rank, .qual .pts{color:var(--gold); font-weight:700;}
+
+  /* Matches */
+  .filters{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .fbtn{padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;
+    border:1px solid var(--line); background:transparent; color:var(--mute);}
+  .fbtn.active{border-color:var(--gold); background:rgba(232,184,75,.12); color:var(--gold);}
+  .mlist{display:flex; flex-direction:column; gap:10px;}
+  .match{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 18px;}
+  .mgrid{display:grid; grid-template-columns:1fr 90px 1fr; gap:12px; align-items:center;}
+  .mhome{display:flex; justify-content:flex-end;}
+  .maway{display:flex; justify-content:flex-start;}
+  .mscore{text-align:center; font-weight:800; font-size:18px; letter-spacing:1px;}
+  .mtime{text-align:center; font-size:11px; color:var(--mute); font-weight:700;}
+  .mg{font-size:9px; color:var(--mute); margin-top:2px;}
+  .win{color:var(--gold)!important; font-weight:700!important;}
+  .wpbar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:var(--line); margin-top:10px;}
+  .wplabel{display:flex; justify-content:space-between; font-size:9px; color:var(--mute); margin-top:4px;}
+  .score-input{
+    width:38px; background:var(--panel2); border:1px solid var(--line); color:var(--txt);
+    border-radius:6px; text-align:center; font-size:16px; font-weight:700; padding:4px 0;
+  }
+  .save-btn{margin-top:10px; width:100%; padding:8px; border-radius:8px; cursor:pointer;
+    background:rgba(232,184,75,.12); border:1px solid var(--gold-dim); color:var(--gold);
+    font-weight:700; font-size:12px;}
+  .save-btn:hover{background:rgba(232,184,75,.2);}
+
+  /* Bracket */
+  .h3{font-size:13px; color:var(--mute); letter-spacing:1px; font-weight:700; margin:0 0 12px;}
+  .leaders{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-bottom:28px;}
+  .leader{background:var(--panel); border:1px solid var(--gold-dim); border-radius:10px; padding:10px 12px;}
+  .leader .tag{font-size:9px; color:var(--gold); font-weight:700; margin-bottom:4px;}
+  .bracket{overflow-x:auto; padding-bottom:8px;}
+  .brow{display:flex; gap:40px; min-width:760px; align-items:center;}
+  .bcol{display:flex; flex-direction:column; justify-content:center;}
+  .rname{font-size:10px; color:var(--gold); font-weight:700; letter-spacing:1px; margin-bottom:6px; text-align:center;}
+  .slot{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 10px; min-width:140px; font-size:12px; font-weight:700;}
+  .slot.empty{color:var(--mute);}
+  .pair{display:flex; flex-direction:column; gap:6px;}
+  .note{color:var(--mute); font-size:12px; margin-top:16px; font-style:italic;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-row">
+      <span style="font-size:34px;">🏆</span>
+      <h1 class="title">WORLD CUP 2026</h1>
+      <span style="font-size:13px; color:var(--mute); font-weight:600;">🇺🇸🇨🇦🇲🇽 · 48 đội</span>
+    </div>
+    <p class="sub">Bảng đấu, kết quả và sơ đồ knock-out — bảng xếp hạng tự tính từ tỷ số bạn nhập</p>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="groups">Bảng đấu</button>
+      <button class="tab" data-tab="matches">Lịch &amp; Kết quả</button>
+      <button class="tab" data-tab="bracket">Knock-out</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div id="groups"></div>
+  <div id="matches" class="hidden"></div>
+  <div id="bracket" class="hidden"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  KHU VỰC DỮ LIỆU — sửa ở đây sau mỗi lượt trận
+//  Trận xong: đặt done:false và điền hs (chủ nhà), as (khách)
+//  Bảng xếp hạng TỰ TÍNH LẠI, không cần sửa tay.
+// ════════════════════════════════════════════════════════════
+const FLAGS = {
+  MEX:"🇲🇽",KOR:"🇰🇷",CZE:"🇨🇿",RSA:"🇿🇦",CAN:"🇨🇦",SUI:"🇨🇭",BIH:"🇧🇦",QAT:"🇶🇦",
+  BRA:"🇧🇷",MAR:"🇲🇦",SCO:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",HTI:"🇭🇹",USA:"🇺🇸",AUS:"🇦🇺",PAR:"🇵🇾",TUR:"🇹🇷",
+  GER:"🇩🇪",CIV:"🇨🇮",ECU:"🇪🇨",CUW:"🇨🇼",NED:"🇳🇱",JPN:"🇯🇵",SWE:"🇸🇪",TUN:"🇹🇳",
+  EGY:"🇪🇬",IRN:"🇮🇷",BEL:"🇧🇪",NZL:"🇳🇿",ESP:"🇪🇸",URU:"🇺🇾",CPV:"🇨🇻",KSA:"🇸🇦",
+  FRA:"🇫🇷",NOR:"🇳🇴",SEN:"🇸🇳",IRQ:"🇮🇶",ARG:"🇦🇷",AUT:"🇦🇹",DZA:"🇩🇿",JOR:"🇯🇴",
+  COL:"🇨🇴",POR:"🇵🇹",COD:"🇨🇩",UZB:"🇺🇿",ENG:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",GHA:"🇬🇭",CRO:"🇭🇷",PAN:"🇵🇦"
+};
+const NAMES = {
+  MEX:"Mexico",KOR:"Hàn Quốc",CZE:"Séc",RSA:"Nam Phi",CAN:"Canada",SUI:"Thụy Sĩ",
+  BIH:"Bosnia",QAT:"Qatar",BRA:"Brazil",MAR:"Maroc",SCO:"Scotland",HTI:"Haiti",
+  USA:"Mỹ",AUS:"Úc",PAR:"Paraguay",TUR:"Thổ Nhĩ Kỳ",GER:"Đức",CIV:"Bờ Biển Ngà",
+  ECU:"Ecuador",CUW:"Curaçao",NED:"Hà Lan",JPN:"Nhật Bản",SWE:"Thụy Điển",TUN:"Tunisia",
+  EGY:"Ai Cập",IRN:"Iran",BEL:"Bỉ",NZL:"New Zealand",ESP:"Tây Ban Nha",URU:"Uruguay",
+  CPV:"Cape Verde",KSA:"Ả Rập Xê Út",FRA:"Pháp",NOR:"Na Uy",SEN:"Senegal",IRQ:"Iraq",
+  ARG:"Argentina",AUT:"Áo",DZA:"Algeria",JOR:"Jordan",COL:"Colombia",POR:"Bồ Đào Nha",
+  COD:"Congo DR",UZB:"Uzbekistan",ENG:"Anh",GHA:"Ghana",CRO:"Croatia",PAN:"Panama"
+};
+// 12 bảng — chỉ cần liệt kê đội, KHÔNG cần nhập điểm
+const GROUPS = {
+  A:["MEX","KOR","CZE","RSA"], B:["CAN","SUI","BIH","QAT"],
+  C:["BRA","MAR","SCO","HTI"], D:["USA","AUS","PAR","TUR"],
+  E:["GER","CIV","ECU","CUW"], F:["NED","JPN","SWE","TUN"],
+  G:["EGY","IRN","BEL","NZL"], H:["ESP","URU","CPV","KSA"],
+  I:["FRA","NOR","SEN","IRQ"], J:["ARG","AUT","DZA","JOR"],
+  K:["COL","POR","COD","UZB"], L:["ENG","GHA","CRO","PAN"]
+};
+// ───────── TOÀN BỘ 72 TRẬN VÒNG BẢNG (giờ Việt Nam) ─────────
+// Mỗi trận: g=bảng, t=thời gian, h=chủ, a=khách
+//  • Đã đá + biết tỷ số → hs, as, done:true
+//  • Đã đá nhưng CHƯA rõ tỷ số chính xác → res ("W"/"D"/"L" cho đội chủ), done:true
+//    (vào BXH đúng điểm; bạn nhập tỷ số qua form để hiện hiệu số)
+//  • Chưa đá → done:false (+ wp xác suất nếu có)
+let MATCHES = [
+  // LƯỢT 1
+  {g:"A",t:"11/06 22:00",h:"MEX",a:"RSA",hs:2,as:0,done:true},
+  {g:"A",t:"11/06 19:00",h:"KOR",a:"CZE",hs:2,as:1,done:true},
+  {g:"B",t:"12/06 23:00",h:"CAN",a:"BIH",hs:1,as:1,done:true},
+  {g:"D",t:"12/06 22:00",h:"USA",a:"PAR",hs:4,as:1,done:true},
+  {g:"B",t:"13/06 03:00",h:"QAT",a:"SUI",hs:1,as:1,done:true},
+  {g:"C",t:"13/06 23:00",h:"BRA",a:"MAR",hs:1,as:1,done:true},
+  {g:"C",t:"13/06 19:00",h:"HTI",a:"SCO",hs:0,as:1,done:true},
+  {g:"D",t:"14/06 03:00",h:"AUS",a:"TUR",hs:2,as:0,done:true},
+  {g:"E",t:"14/06 22:00",h:"GER",a:"CUW",hs:7,as:1,done:true},
+  {g:"F",t:"14/06 23:00",h:"NED",a:"JPN",hs:2,as:2,done:true},
+  {g:"E",t:"15/06 01:00",h:"CIV",a:"ECU",hs:1,as:0,done:true},
+  {g:"F",t:"15/06 03:00",h:"SWE",a:"TUN",hs:5,as:1,done:true},
+  {g:"H",t:"15/06 23:00",h:"ESP",a:"CPV",hs:0,as:0,done:true},
+  {g:"G",t:"15/06 22:00",h:"BEL",a:"EGY",hs:1,as:1,done:true},
+  {g:"H",t:"16/06 01:00",h:"KSA",a:"URU",hs:1,as:1,done:true},
+  {g:"G",t:"16/06 03:00",h:"IRN",a:"NZL",hs:2,as:2,done:true},
+  {g:"I",t:"16/06 22:00",h:"FRA",a:"SEN",res:"W",done:true},
+  {g:"I",t:"17/06 01:00",h:"IRQ",a:"NOR",res:"L",done:true},
+  {g:"J",t:"17/06 02:00",h:"ARG",a:"DZA",res:"W",done:true},
+  {g:"J",t:"17/06 03:00",h:"AUT",a:"JOR",res:"W",done:true},
+  {g:"K",t:"17/06 23:00",h:"POR",a:"COD",res:"D",done:true},
+  {g:"L",t:"17/06 22:00",h:"ENG",a:"CRO",res:"W",done:true},
+  {g:"L",t:"18/06 01:00",h:"GHA",a:"PAN",res:"W",done:true},
+  {g:"K",t:"18/06 03:00",h:"UZB",a:"COL",res:"L",done:true},
+  // LƯỢT 2
+  {g:"A",t:"18/06 23:00",h:"CZE",a:"RSA",res:"D",done:true},
+  {g:"B",t:"18/06 22:00",h:"SUI",a:"BIH",res:"W",done:true},
+  {g:"B",t:"19/06 01:00",h:"CAN",a:"QAT",res:"W",done:true},
+  {g:"A",t:"19/06 03:00",h:"MEX",a:"KOR",res:"W",done:true},
+  {g:"D",t:"19/06 22:00",h:"USA",a:"AUS",res:"W",done:true},
+  {g:"C",t:"20/06 01:00",h:"SCO",a:"MAR",res:"L",done:true},
+  {g:"C",t:"20/06 04:00",h:"BRA",a:"HTI",res:"W",done:true},
+  {g:"D",t:"20/06 03:00",h:"TUR",a:"PAR",res:"L",done:true},
+  {g:"F",t:"20/06 23:00",h:"NED",a:"SWE",res:"W",done:true},
+  {g:"E",t:"21/06 03:00",h:"GER",a:"CIV",res:"W",done:true},
+  {g:"E",t:"21/06 06:00",h:"ECU",a:"CUW",res:"D",done:true},
+  {g:"F",t:"21/06 05:00",h:"TUN",a:"JPN",res:"L",done:true},
+  {g:"H",t:"21/06 23:00",h:"ESP",a:"KSA",res:"W",done:true},
+  {g:"G",t:"21/06 22:00",h:"BEL",a:"IRN",res:"D",done:true},
+  {g:"H",t:"22/06 05:00",h:"URU",a:"CPV",hs:2,as:2,done:true},
+  {g:"G",t:"22/06 08:00",h:"NZL",a:"EGY",hs:1,as:3,done:true},
+  {g:"J",t:"23/06 00:00",h:"ARG",a:"AUT",hs:2,as:0,done:true},
+  {g:"I",t:"23/06 04:00",h:"FRA",a:"IRQ",hs:3,as:0,done:true},
+  {g:"I",t:"23/06 07:00",h:"NOR",a:"SEN",hs:3,as:2,done:true},
+  {g:"J",t:"23/06 10:00",h:"JOR",a:"DZA",hs:1,as:2,done:true},
+  {g:"K",t:"24/06 00:00",h:"POR",a:"UZB",hs:5,as:0,done:true},
+  {g:"L",t:"24/06 03:00",h:"ENG",a:"GHA",hs:0,as:0,done:true},
+  {g:"L",t:"24/06 06:00",h:"PAN",a:"CRO",hs:0,as:1,done:true},
+  {g:"K",t:"24/06 09:00",h:"COL",a:"COD",hs:1,as:0,done:true},
+  // LƯỢT 3 (chưa đá)
+  {g:"B",t:"25/06 02:00",h:"SUI",a:"CAN",done:false,wp:{h:40,d:31,a:29}},
+  {g:"B",t:"25/06 02:00",h:"BIH",a:"QAT",done:false,wp:{h:71,d:17,a:12}},
+  {g:"C",t:"25/06 05:00",h:"SCO",a:"BRA",done:false,wp:{h:9,d:17,a:74}},
+  {g:"C",t:"25/06 05:00",h:"MAR",a:"HTI",done:false,wp:{h:82,d:12,a:6}},
+  {g:"A",t:"25/06 08:00",h:"CZE",a:"MEX",done:false,wp:{h:26,d:25,a:49}},
+  {g:"A",t:"25/06 08:00",h:"RSA",a:"KOR",done:false,wp:{h:17,d:24,a:59}},
+  {g:"E",t:"26/06 03:00",h:"ECU",a:"GER",done:false,wp:{h:24,d:24,a:52}},
+  {g:"E",t:"26/06 03:00",h:"CUW",a:"CIV",done:false,wp:{h:5,d:11,a:84}},
+  {g:"F",t:"26/06 06:00",h:"TUN",a:"NED",done:false,wp:{h:4,d:10,a:86}},
+  {g:"F",t:"26/06 06:00",h:"JPN",a:"SWE",done:false,wp:{h:51,d:27,a:22}},
+  {g:"D",t:"26/06 09:00",h:"TUR",a:"USA",done:false,wp:{h:14,d:23,a:63}},
+  {g:"D",t:"26/06 09:00",h:"PAR",a:"AUS",done:false,wp:{h:38,d:30,a:32}},
+  {g:"I",t:"27/06 02:00",h:"NOR",a:"FRA",done:false,wp:{h:30,d:27,a:43}},
+  {g:"I",t:"27/06 02:00",h:"SEN",a:"IRQ",done:false,wp:{h:62,d:23,a:15}},
+  {g:"H",t:"27/06 07:00",h:"CPV",a:"KSA",done:false,wp:{h:40,d:30,a:30}},
+  {g:"H",t:"27/06 07:00",h:"URU",a:"ESP",done:false,wp:{h:25,d:28,a:47}},
+  {g:"G",t:"27/06 10:00",h:"EGY",a:"IRN",done:false,wp:{h:40,d:32,a:28}},
+  {g:"G",t:"27/06 10:00",h:"NZL",a:"BEL",done:false,wp:{h:14,d:24,a:62}},
+  {g:"L",t:"28/06 04:00",h:"PAN",a:"ENG",done:false,wp:{h:8,d:18,a:74}},
+  {g:"L",t:"28/06 04:00",h:"CRO",a:"GHA",done:false,wp:{h:50,d:28,a:22}},
+  {g:"K",t:"28/06 06:30",h:"COL",a:"POR",done:false,wp:{h:38,d:29,a:33}},
+  {g:"K",t:"28/06 06:30",h:"COD",a:"UZB",done:false,wp:{h:42,d:30,a:28}},
+  {g:"J",t:"28/06 09:00",h:"DZA",a:"AUT",done:false,wp:{h:36,d:30,a:34}},
+  {g:"J",t:"28/06 09:00",h:"JOR",a:"ARG",done:false,wp:{h:6,d:16,a:78}}
+];
+// Thứ tự chính thức (chỉ dùng phân định khi điểm BẰNG NHAU và chưa đủ hiệu số,
+// vì luật 2026 ưu tiên đối đầu trực tiếp — sẽ tự đúng khi bạn nhập đủ tỷ số).
+const OFFRANK = {
+  MEX:1,KOR:2,CZE:3,RSA:4, CAN:1,SUI:2,BIH:3,QAT:4, BRA:1,MAR:2,SCO:3,HTI:4,
+  USA:1,AUS:2,PAR:3,TUR:4, GER:1,CIV:2,ECU:3,CUW:4, NED:1,JPN:2,SWE:3,TUN:4,
+  EGY:1,IRN:2,BEL:3,NZL:4, ESP:1,URU:2,CPV:3,KSA:4, FRA:1,NOR:2,SEN:3,IRQ:4,
+  ARG:1,AUT:2,DZA:3,JOR:4, COL:1,POR:2,COD:3,UZB:4, ENG:1,GHA:2,CRO:3,PAN:4
+};
+// ════════════════════ HẾT KHU VỰC DỮ LIỆU ════════════════════
+
+// ── Bảng xếp hạng tính THẲNG từ 72 trận ──
+//  • Trận có tỷ số (hs/as): cộng cả điểm lẫn hiệu số.
+//  • Trận chỉ biết kết quả (res): cộng điểm, không cộng hiệu số.
+function computeStandings(){
+  const tbl = {};
+  for(const g in GROUPS){
+    tbl[g] = {};
+    GROUPS[g].forEach(c => tbl[g][c] = {c, w:0, d:0, l:0, gf:0, ga:0, o:OFFRANK[c]||9, pts:0});
+  }
+  MATCHES.forEach(m => {
+    if(!m.done) return;
+    const t = tbl[m.g]; if(!t) return;
+    let res = m.res;
+    if(res === undefined && m.hs!=null && m.as!=null){
+      // có tỷ số → cộng hiệu số + suy ra kết quả
+      t[m.h].gf+=m.hs; t[m.h].ga+=m.as;
+      t[m.a].gf+=m.as; t[m.a].ga+=m.hs;
+      res = m.hs>m.as ? "W" : m.hs<m.as ? "L" : "D";
+    }
+    if(res==="W"){ t[m.h].w++; t[m.h].pts+=3; t[m.a].l++; }
+    else if(res==="L"){ t[m.a].w++; t[m.a].pts+=3; t[m.h].l++; }
+    else if(res==="D"){ t[m.h].d++; t[m.a].d++; t[m.h].pts++; t[m.a].pts++; }
+  });
+  const out = {};
+  for(const g in tbl){
+    out[g] = Object.values(tbl[g]).sort((x,y)=>
+      y.pts-x.pts || x.o-y.o || (y.gf-y.ga)-(x.gf-x.ga) || y.gf-x.gf
+    );
+  }
+  return out;
+}
+
+function flag(c){ return `<span class="flag">${FLAGS[c]||"🏳️"}</span>`; }
+
+// ── TAB 1: BẢNG ĐẤU ──
+function renderGroups(){
+  const S = computeStandings();
+  let html = `<p class="lead">12 bảng, 4 đội mỗi bảng. <b>2 đội đầu mỗi bảng</b> đi tiếp, cộng <b>8 đội hạng 3 tốt nhất</b> → 32 đội vào knock-out. Cột Đ = điểm, HS = hiệu số. Bảng xếp hạng tự cập nhật theo tỷ số.</p><div class="grid-groups">`;
+  for(const g in S){
+    html += `<div class="gcard"><div class="ghead"><span class="gbadge">${g}</span><span class="glabel">BẢNG ${g}</span></div><div style="padding:6px 8px;">
+      <div class="grow ghdr"><span>#</span><span>ĐỘI</span><span class="center">T</span><span class="center">H</span><span class="center">B</span><span class="center">HS</span><span class="center">Đ</span></div>`;
+    S[g].forEach((r,i)=>{
+      const q = i<2 ? "qual" : "";
+      const gd = r.gf-r.ga;
+      const gdTxt = (r.gf===0 && r.ga===0) ? "–" : (gd>0?"+"+gd:gd);
+      html += `<div class="grow ${q}">
+        <span class="rank" style="font-size:13px;color:var(--mute);font-weight:700;">${i+1}</span>
+        <span class="team">${flag(r.c)}<span class="nm">${NAMES[r.c]}</span></span>
+        <span class="center" style="font-size:13px;">${r.w}</span>
+        <span class="center" style="font-size:13px;color:var(--mute);">${r.d}</span>
+        <span class="center" style="font-size:13px;color:var(--mute);">${r.l}</span>
+        <span class="center" style="font-size:12px;color:var(--mute);">${gdTxt}</span>
+        <span class="pts center" style="font-size:15px;font-weight:800;">${r.pts}</span>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+  html += `</div>`;
+  document.getElementById("groups").innerHTML = html;
+}
+
+// ── TAB 2: LỊCH & KẾT QUẢ ──
+let curFilter = "all";
+function renderMatches(){
+  const list = MATCHES.filter(m => curFilter==="all"?true:curFilter==="done"?m.done:!m.done);
+  let html = `<div class="filters">
+    ${["all","done","upcoming"].map(f=>`<button class="fbtn ${curFilter===f?"active":""}" data-f="${f}">${f==="all"?"Tất cả":f==="done"?"Đã đấu":"Sắp diễn ra"}</button>`).join("")}
+  </div><div class="mlist">`;
+  list.forEach(m=>{
+    const idx = MATCHES.indexOf(m);
+    const hasScore = m.done && m.hs!=null && m.as!=null;
+    const resOnly = m.done && !hasScore && m.res;
+    const hw = hasScore ? m.hs>m.as : resOnly && m.res==="W";
+    const aw = hasScore ? m.as>m.hs : resOnly && m.res==="L";
+    html += `<div class="match"><div class="mgrid">
+      <div class="mhome"><span class="team">${flag(m.h)}<span class="nm ${hw?"win":""}">${NAMES[m.h]}</span></span></div>
+      <div>`;
+    if(hasScore){
+      html += `<div class="mscore" style="color:${m.hs===m.as?"var(--txt)":"var(--gold)"};">${m.hs} – ${m.as}</div>`;
+    } else if(resOnly){
+      const lab = m.res==="D" ? "HÒA" : (m.res==="W"?NAMES[m.h]:NAMES[m.a])+" THẮNG";
+      html += `<div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.5px;">${lab}</div>
+               <div style="font-size:8px;color:var(--mute);margin-top:2px;">chưa rõ tỷ số</div>`;
+    } else {
+      html += `<div class="mtime">${m.t.split(" ")[1]}</div>`;
+    }
+    html += `<div class="mg center">Bảng ${m.g} · ${m.t.split(" ")[0]}</div></div>
+      <div class="maway"><span class="team">${flag(m.a)}<span class="nm ${aw?"win":""}">${NAMES[m.a]}</span></span></div>
+    </div>`;
+    if(!m.done && m.wp){
+      html += `<div class="wpbar">
+        <div style="width:${m.wp.h}%;background:var(--gold);"></div>
+        <div style="width:${m.wp.d}%;background:var(--mute);"></div>
+        <div style="width:${m.wp.a}%;background:var(--blue);"></div></div>
+        <div class="wplabel"><span>${m.wp.h}% thắng</span><span>${m.wp.d}% hòa</span><span>${m.wp.a}% thắng</span></div>`;
+    }
+    // form nhập tỷ số: cho cả trận sắp đá LẪN trận res (để bổ sung hiệu số)
+    if(!hasScore){
+      html += `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;">
+        <input class="score-input" id="hs-${idx}" type="number" min="0" placeholder="-">
+        <span style="color:var(--mute);font-weight:700;">–</span>
+        <input class="score-input" id="as-${idx}" type="number" min="0" placeholder="-">
+      </div>
+      <button class="save-btn" data-save="${idx}">Lưu tỷ số &amp; cập nhật bảng</button>`;
+    }
+    html += `</div>`;
+  });
+  html += `</div>`;
+  document.getElementById("matches").innerHTML = html;
+
+  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{curFilter=b.dataset.f; renderMatches();});
+  document.querySelectorAll("[data-save]").forEach(b=>b.onclick=()=>{
+    const i = +b.dataset.save;
+    const hs = parseInt(document.getElementById(`hs-${i}`).value);
+    const as = parseInt(document.getElementById(`as-${i}`).value);
+    if(isNaN(hs)||isNaN(as)){ b.textContent="⚠ Nhập đủ 2 tỷ số"; setTimeout(()=>b.textContent="Lưu tỷ số & cập nhật bảng",1500); return; }
+    MATCHES[i].hs=hs; MATCHES[i].as=as; MATCHES[i].done=true; delete MATCHES[i].res;
+    renderGroups(); renderMatches(); renderBracket();
+  });
+}
+
+// ── TAB 3: KNOCK-OUT ──
+function renderBracket(){
+  const S = computeStandings();
+  const leaders = Object.keys(S).map(g=>({g, c:S[g][0].c}));
+  let html = `<p class="lead">Vòng knock-out bắt đầu từ <b>vòng 1/16 (32 đội)</b>. Vòng bảng chưa xong nên nhánh chưa chốt — dưới đây là các đội <b>đang dẫn đầu</b> mỗi bảng.</p>`;
+  html += `<h3 class="h3">ĐANG DẪN ĐẦU 12 BẢNG</h3><div class="leaders">`;
+  leaders.forEach(({g,c})=>{
+    html += `<div class="leader"><div class="tag">NHẤT BẢNG ${g}</div><div class="team">${flag(c)}<span class="nm">${NAMES[c]}</span></div></div>`;
+  });
+  html += `</div><h3 class="h3">SƠ ĐỒ XƯƠNG CÁ (KHUNG)</h3><div class="bracket"><div class="brow">`;
+  const rounds=[{t:"1/16",n:4},{t:"Tứ kết",n:2},{t:"Bán kết",n:1},{t:"Chung kết",n:1,final:true}];
+  rounds.forEach(r=>{
+    html += `<div class="bcol" style="gap:${r.final?0:24}px;"><div class="rname">${r.t.toUpperCase()}</div>`;
+    for(let i=0;i<r.n;i++){
+      html += `<div class="pair"><div class="slot empty">Chờ xác định</div><div class="slot empty">Chờ xác định</div>${r.final?'<div style="text-align:center;margin-top:10px;font-size:24px;">🏆</div>':''}</div>`;
+    }
+    html += `</div>`;
+  });
+  html += `</div></div><p class="note">Khung rút gọn để dễ nhìn — sơ đồ đầy đủ 32 đội sẽ tự chốt cặp khi vòng bảng kết thúc.</p>`;
+  document.getElementById("bracket").innerHTML = html;
+}
+
+// ── Tabs ──
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  ["groups","matches","bracket"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+  document.getElementById(t.dataset.tab).classList.remove("hidden");
+});
+
+renderGroups(); renderMatches(); renderBracket();
+</script>
+</body>
+</html>
